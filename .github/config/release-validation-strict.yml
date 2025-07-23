@@ -1,0 +1,14 @@
+# 严格的Release分支验证配置
+# 用于测试具体的JIRA号和作者限制
+
+# 只允许特定的JIRA号
+allowed_jiras:
+  - 'PROJ-001'
+  - 'DEMO-100'
+  - 'TEST-002'
+
+# 只允许特定的作者
+allowed_authors:
+  - 'Test User'
+  - 'test-user'
+  - 'developer1'
