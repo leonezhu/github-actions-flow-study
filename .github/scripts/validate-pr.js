@@ -21,6 +21,20 @@ function extractJiraNumbers(commitMessage) {
   return matches || [];
 }
 
+// 检查是否为merge commit
+function isMergeCommit(commitMessage) {
+  // 检查常见的merge commit模式
+  const mergePatterns = [
+    /^Merge branch/i,
+    /^Merge pull request/i,
+    /^Merge remote-tracking branch/i,
+    /^Merge tag/i,
+    /^Merge commit/i
+  ];
+  
+  return mergePatterns.some(pattern => pattern.test(commitMessage.trim()));
+}
+
 // 获取PR中的所有commits
 function getPRCommits() {
   try {
@@ -55,6 +69,12 @@ function validateJiraNumbers(commits, allowedJiras) {
   const foundJiras = new Set();
 
   commits.forEach(commit => {
+    // 跳过merge commit的JIRA号验证
+    if (isMergeCommit(commit.message)) {
+      console.log(`⏭️  跳过merge commit: ${commit.hash.substring(0, 8)} "${commit.message}"`);
+      return;
+    }
+
     const jiraNumbers = extractJiraNumbers(commit.message);
     
     if (jiraNumbers.length === 0) {
