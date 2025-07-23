@@ -151,7 +151,6 @@ allowed_authors:
 # 选项3: 团队成员配置
 allowed_authors:
   - 'senior-dev1'
-  - 'senior-dev2'
   - 'devops-team'
   - 'product-owner'
 ```
