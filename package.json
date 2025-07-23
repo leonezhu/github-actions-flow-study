@@ -1,0 +1,25 @@
+{
+  "name": "github-actions-release-validation",
+  "version": "1.0.0",
+  "description": "GitHub Actions workflow for validating JIRA numbers and authors in release branch PRs",
+  "main": ".github/scripts/validate-pr.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "validate": "node .github/scripts/validate-pr.js"
+  },
+  "keywords": [
+    "github-actions",
+    "jira",
+    "validation",
+    "release",
+    "pull-request"
+  ],
+  "author": "Your Name",
+  "license": "MIT",
+  "dependencies": {
+    "js-yaml": "^4.1.0"
+  },
+  "engines": {
+    "node": ">=14.0.0"
+  }
+}

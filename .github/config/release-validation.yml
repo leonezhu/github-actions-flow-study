@@ -1,0 +1,34 @@
+# Release分支验证配置
+# 此文件定义了哪些JIRA号和作者可以合并到release分支
+
+# 允许的JIRA号列表
+# 使用 '*' 表示允许所有JIRA号
+# 或者指定具体的JIRA号，例如: ['ABC-123', 'DEF-456']
+allowed_jiras:
+  - '*'  # 允许所有JIRA号
+  # - 'ABC-123'
+  # - 'DEF-456'
+  # - 'XYZ-789'
+
+# 允许的作者列表
+# 使用 '*' 表示允许所有作者
+# 或者指定具体的GitHub用户名
+allowed_authors:
+  - '*'  # 允许所有作者
+  # - 'developer1'
+  # - 'developer2'
+  # - 'team-lead'
+
+# 配置说明:
+# 1. allowed_jiras: 定义可以合并到release分支的JIRA号
+#    - 使用 '*' 允许所有JIRA号
+#    - 或列出具体的JIRA号（格式：项目前缀-数字，如ABC-123）
+#
+# 2. allowed_authors: 定义可以合并到release分支的作者
+#    - 使用 '*' 允许所有作者
+#    - 或列出具体的GitHub用户名
+#
+# 注意：
+# - 每个commit消息必须包含至少一个JIRA号
+# - JIRA号格式必须是：大写字母-数字（如ABC-123）
+# - 验证会检查PR作者和所有commit的作者

@@ -1,0 +1,38 @@
+# Release分支验证配置示例
+# 此文件展示了如何配置具体的JIRA号和作者限制
+
+# 示例1: 限制特定的JIRA号
+allowed_jiras:
+  - 'ABC-123'
+  - 'ABC-124'
+  - 'DEF-456'
+  - 'XYZ-789'
+
+# 示例1: 限制特定的作者
+allowed_authors:
+  - 'developer1'
+  - 'developer2'
+  - 'team-lead'
+  - 'release-manager'
+
+# 其他配置示例:
+
+# 示例2: 只允许特定项目的JIRA号
+# allowed_jiras:
+#   - 'PROJ-*'  # 注意：当前脚本不支持通配符，需要列出具体号码
+
+# 示例3: 混合配置
+# allowed_jiras:
+#   - 'HOTFIX-001'
+#   - 'HOTFIX-002'
+#   - 'RELEASE-001'
+# 
+# allowed_authors:
+#   - 'senior-dev1'
+#   - 'senior-dev2'
+#   - 'devops-team'
+
+# 使用说明:
+# 1. 将此文件重命名为 release-validation.yml
+# 2. 根据项目需求修改 allowed_jiras 和 allowed_authors
+# 3. 提交到仓库的 .github/config/ 目录
