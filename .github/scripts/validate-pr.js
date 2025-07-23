@@ -2,28 +2,28 @@ const fs = require('fs');
 const yaml = require('js-yaml');
 const { execSync } = require('child_process');
 
-// 读取配置文件
+// Load configuration file
 function loadConfig() {
   try {
     const configFile = fs.readFileSync('.github/config/release-validation.yml', 'utf8');
     return yaml.load(configFile);
   } catch (error) {
-    console.error('❌ 无法读取配置文件 .github/config/release-validation.yml');
-    console.error('请确保配置文件存在并格式正确');
+    console.error('❌ Unable to read configuration file .github/config/release-validation.yml');
+    console.error('Please ensure the configuration file exists and is properly formatted');
     process.exit(1);
   }
 }
 
-// 从commit消息中提取JIRA号
+// Extract JIRA numbers from commit message
 function extractJiraNumbers(commitMessage) {
   const jiraPattern = /([A-Z]+-\d+)/g;
   const matches = commitMessage.match(jiraPattern);
   return matches || [];
 }
 
-// 检查是否为merge commit
+// Check if it's a merge commit
 function isMergeCommit(commitMessage) {
-  // 检查常见的merge commit模式
+  // Check common merge commit patterns
   const mergePatterns = [
     /^Merge branch/i,
     /^Merge pull request/i,
@@ -35,7 +35,7 @@ function isMergeCommit(commitMessage) {
   return mergePatterns.some(pattern => pattern.test(commitMessage.trim()));
 }
 
-// 获取PR中的所有commits
+// Get all commits in the PR
 function getPRCommits() {
   try {
     const baseRef = process.env.BASE_SHA;
@@ -53,15 +53,15 @@ function getPRCommits() {
     
     return commits;
   } catch (error) {
-    console.error('❌ 获取commit信息失败:', error.message);
+    console.error('❌ Failed to get commit information:', error.message);
     process.exit(1);
   }
 }
 
-// 验证JIRA号
+// Validate JIRA numbers
 function validateJiraNumbers(commits, allowedJiras) {
   if (allowedJiras.includes('*')) {
-    console.log('✅ JIRA号验证: 允许所有JIRA号');
+    console.log('✅ JIRA validation: All JIRA numbers allowed');
     return true;
   }
 
@@ -69,106 +69,106 @@ function validateJiraNumbers(commits, allowedJiras) {
   const foundJiras = new Set();
 
   commits.forEach(commit => {
-    // 跳过merge commit的JIRA号验证
+    // Skip JIRA validation for merge commits
     if (isMergeCommit(commit.message)) {
-      console.log(`⏭️  跳过merge commit: ${commit.hash.substring(0, 8)} "${commit.message}"`);
+      console.log(`⏭️  Skip merge commit: ${commit.hash.substring(0, 8)} "${commit.message}"`);
       return;
     }
 
     const jiraNumbers = extractJiraNumbers(commit.message);
     
     if (jiraNumbers.length === 0) {
-      errors.push(`Commit ${commit.hash.substring(0, 8)} 缺少JIRA号: "${commit.message}"`);
+      errors.push(`Commit ${commit.hash.substring(0, 8)} missing JIRA number: "${commit.message}"`);
       return;
     }
 
     jiraNumbers.forEach(jira => {
       foundJiras.add(jira);
       if (!allowedJiras.includes(jira)) {
-        errors.push(`Commit ${commit.hash.substring(0, 8)} 包含未授权的JIRA号 ${jira}: "${commit.message}"`);
+        errors.push(`Commit ${commit.hash.substring(0, 8)} contains unauthorized JIRA number ${jira}: "${commit.message}"`);
       }
     });
   });
 
   if (errors.length > 0) {
-    console.log('❌ JIRA号验证失败:');
+    console.log('❌ JIRA validation failed:');
     errors.forEach(error => console.log(`  - ${error}`));
     return false;
   }
 
-  console.log('✅ JIRA号验证通过');
-  console.log(`  发现的JIRA号: ${Array.from(foundJiras).join(', ')}`);
+  console.log('✅ JIRA validation passed');
+  console.log(`  Found JIRA numbers: ${Array.from(foundJiras).join(', ')}`);
   return true;
 }
 
-// 验证作者权限
+// Validate author permissions
 function validateAuthors(commits, allowedAuthors, prAuthor) {
   if (allowedAuthors.includes('*')) {
-    console.log('✅ 作者验证: 允许所有作者');
+    console.log('✅ Author validation: All authors allowed');
     return true;
   }
 
   const errors = [];
   const commitAuthors = new Set();
 
-  // 检查PR作者
+  // Check PR author
   if (!allowedAuthors.includes(prAuthor)) {
-    errors.push(`PR作者 ${prAuthor} 没有合并到此分支的权限`);
+    errors.push(`PR author ${prAuthor} does not have permission to merge to this branch`);
   }
 
-  // 检查commit作者
+  // Check commit authors
   commits.forEach(commit => {
     commitAuthors.add(commit.author);
     if (!allowedAuthors.includes(commit.author)) {
-      errors.push(`Commit ${commit.hash.substring(0, 8)} 的作者 ${commit.author} 没有合并到此分支的权限`);
+      errors.push(`Author ${commit.author} of commit ${commit.hash.substring(0, 8)} does not have permission to merge to this branch`);
     }
   });
 
   if (errors.length > 0) {
-    console.log('❌ 作者验证失败:');
+    console.log('❌ Author validation failed:');
     errors.forEach(error => console.log(`  - ${error}`));
     return false;
   }
 
-  console.log('✅ 作者验证通过');
-  console.log(`  PR作者: ${prAuthor}`);
-  console.log(`  Commit作者: ${Array.from(commitAuthors).join(', ')}`);
+  console.log('✅ Author validation passed');
+  console.log(`  PR author: ${prAuthor}`);
+  console.log(`  Commit authors: ${Array.from(commitAuthors).join(', ')}`);
   return true;
 }
 
-// 主函数
+// Main function
 function main() {
-  console.log('🔍 开始验证PR到release分支的权限...');
-  console.log(`📋 目标分支: ${process.env.BASE_BRANCH}`);
-  console.log(`👤 PR作者: ${process.env.PR_AUTHOR}`);
+  console.log('🔍 Starting validation of PR permissions to release branch...');
+  console.log(`📋 Target branch: ${process.env.BASE_BRANCH}`);
+  console.log(`👤 PR author: ${process.env.PR_AUTHOR}`);
   console.log('');
 
-  // 加载配置
+  // Load configuration
   const config = loadConfig();
-  console.log('📖 配置加载成功');
-  console.log(`  允许的JIRA号: ${config.allowed_jiras.join(', ')}`);
-  console.log(`  允许的作者: ${config.allowed_authors.join(', ')}`);
+  console.log('📖 Configuration loaded successfully');
+  console.log(`  Allowed JIRA numbers: ${config.allowed_jiras.join(', ')}`);
+  console.log(`  Allowed authors: ${config.allowed_authors.join(', ')}`);
   console.log('');
 
-  // 获取commits
+  // Get commits
   const commits = getPRCommits();
-  console.log(`📝 找到 ${commits.length} 个commits`);
+  console.log(`📝 Found ${commits.length} commits`);
   console.log('');
 
-  // 验证JIRA号
+  // Validate JIRA numbers
   const jiraValid = validateJiraNumbers(commits, config.allowed_jiras);
   console.log('');
 
-  // 验证作者
+  // Validate authors
   const authorValid = validateAuthors(commits, config.allowed_authors, process.env.PR_AUTHOR);
   console.log('');
 
-  // 最终结果
+  // Final result
   if (jiraValid && authorValid) {
-    console.log('🎉 所有验证通过，PR可以合并！');
+    console.log('🎉 All validations passed, PR can be merged!');
     process.exit(0);
   } else {
-    console.log('❌ 验证失败，PR不能合并！');
+    console.log('❌ Validation failed, PR cannot be merged!');
     process.exit(1);
   }
 }

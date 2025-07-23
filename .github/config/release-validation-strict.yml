@@ -1,13 +1,13 @@
-# 严格的Release分支验证配置
-# 用于测试具体的JIRA号和作者限制
+# Strict release branch validation configuration
+# Used for testing specific JIRA numbers and author restrictions
 
-# 只允许特定的JIRA号
+# Only allow specific JIRA numbers
 allowed_jiras:
   - 'PROJ-001'
   - 'DEMO-100'
   - 'TEST-002'
 
-# 只允许特定的作者
+# Only allow specific authors
 allowed_authors:
   - 'Test User'
   - 'test-user'

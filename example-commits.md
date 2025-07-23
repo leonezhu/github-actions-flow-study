@@ -51,6 +51,21 @@ git commit -m "123-ABC 修复bug"          # 数字在前
 - **数字**: 1个或多个数字
 - **示例**: `ABC-123`, `PROJECT-456`, `HOTFIX-1`
 
+## 🔄 Merge Commit自动跳过
+
+以下类型的merge commit会自动跳过JIRA号验证：
+
+```bash
+# ✅ 这些merge commit不需要JIRA号
+Merge branch 'release/20250808' into main
+Merge pull request #123 from feature/user-login
+Merge remote-tracking branch 'origin/develop'
+Merge tag 'v1.0.0'
+Merge commit 'abc123def456'
+```
+
+**说明**: 系统会自动识别并跳过这些merge commit的JIRA号验证，只验证用户手动提交的commit。
+
 ## 测试用的JIRA号
 
 在测试时，可以使用以下JIRA号（需要在配置文件中允许）：

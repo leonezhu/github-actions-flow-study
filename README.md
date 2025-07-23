@@ -6,6 +6,7 @@
 
 ✅ **JIRA号验证**
 - 检查每个commit是否包含有效的JIRA号
+- 自动跳过merge commit的JIRA号验证
 - 支持配置允许的JIRA号白名单
 - 支持通配符`*`允许所有JIRA号
 
@@ -110,6 +111,12 @@ git commit -m "添加新功能"
 - 格式：`项目前缀-数字`（如：`ABC-123`、`DEF-456`）
 - 大小写敏感（必须大写）
 - 可以在commit消息的任意位置
+- **Merge commit自动跳过验证**：以下模式的commit会被自动跳过JIRA号验证
+  - `Merge branch 'xxx' into yyy`
+  - `Merge pull request #123 from xxx`
+  - `Merge remote-tracking branch 'xxx'`
+  - `Merge tag 'xxx'`
+  - `Merge commit 'xxx'`
 
 ### 配置选项
 
